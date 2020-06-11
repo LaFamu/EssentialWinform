@@ -1,0 +1,29 @@
+您可以修改PropertyGrid的某些外观特征以满足自己的需要。可以更改某些属性的显示方式，甚至选择
+不显示某些属性。那么，如何对PropertyGrid进行自定义呢？
+
+1、更改PropertyGrid的外观特征
+PropertyGrid的许多外观特征都可以自定义。下面列出了其中的一部分：
+通过HelpBackColor、HelpForeColor和HelpVisible属性可以更改背景颜色、更改字体颜色或隐藏说明
+窗格。
+通过ToolbarVisible属性可以隐藏工具栏，通过BackColor属性可以更改工具栏的颜色，通过LaregButtons
+属性可以显示大工具栏按钮。
+使用PropertySort属性可以按字母顺序对属性进行排序和分类。
+通过BackColor属性可以更改拆分器的颜色。
+通过LineColor属性可以更改网格线和边框。
+
+2、更改属性的显示方式
+要更改某些属性的显示方式，您可以对这些属性应用不同的特征。特性是用于为类型、字段、方法和属性
+等编程元素添加批注的声明标记，在运行时可以使用反射对其进行检索。下面列出了其中的一部分：
+DescriptionAttribute - 设置显示在属性下方说明帮助窗格中的属性文本。这是一种为活动属性（即具有
+焦点的属性)提供帮助文本的有效方法。可以将此特性应用于MaxRepeatRate属性。
+CategoryAttribute - 设置属性在网格中所属的类别。当您需要将属性按类别名称分组时，此特性非常
+有用。如果没有为属性指定类别，该属性将被分配给杂项类别。可以将此特性应用于所有属性。
+BrowsableAttribute - 表示是否在网格中显示属性。此特性可用于在网格中隐藏属性。默认情况下，
+公共属性始终显示在网格中。可以将此特性应用于SettingsChanged属性。
+ReadOnlyAttribute - 表示属性是否为只读。此特性可用于禁止在网格中编辑属性。默认情况下，带
+有get和set访问函数的公共属性在网格中是可以编辑的。可以将此特性应用于AppVersion属性。
+DefaultValueAttribute - 表示属性的默认值。如果希望为属性提供属性值，然后确定该属性值是否
+与默认值相同，则可使用此特性。可以将此特性应用于所有属性。
+DefaultPropertyAttribute - 表示类的默认属性。在网格中选择某个类时，将首先突出显示该类的
+默认属性。可以将此特性应用于AppSettings类。
+现在，，我们将其中的一些特性应用于AppSetting类，以更改属性在PropertyGrid中的显示方式。
