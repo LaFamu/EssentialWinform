@@ -1,1 +1,1 @@
-# EssentialWinform
+这个仓库介绍了我在自己开发过程中，所使用的一些Winform控件，以及这些控件的用法。
