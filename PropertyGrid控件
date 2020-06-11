@@ -1,0 +1,79 @@
+如果您使用过VB或者VS，那么您一定使用过属性浏览器来浏览、查看和编辑一个或多个对象的属性。
+.NET框架PropertyGrid控件是Visual Studio .NET属性浏览器的核心。PropertyGrid控件显示对象
+或类型的属性，并主要通过使用反射来检索项目的属性。（反射是在运行时提供类型信息的技术）
+
+PropertyGrid包含以下部分:
+属性
+可展开属性
+属性类别标题
+属性说明
+属性编辑器
+属性选项卡
+命令窗格(显示控件设计器提供的设计器操作)
+
+
+以下代码显示了如何创建PropertyGrid控件并将其添加到窗体中。
+this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+this.propertyGrid1.Location = new System.Drawing.Point(457, 26);
+this.propertyGrid1.Name = "propertyGrid1";
+this.propertyGrid1.Size = new System.Drawing.Size(299, 380);
+this.propertyGrid1.TabIndex = 0;
+
+
+何处使用PropertyGrid控件？
+在应用程序中的很多地方，您都可以使用户与Property进行交互，从而获取更丰富的编辑体验。例如，
+某个应用程序包含多个用户可以设置的"设置"或选项，其中一些可能十分复杂。您可以使用单选按钮、
+组合框或文本框来表示这些选项。但本文将逐步介绍如何使用PropertyGrid控件创建选项窗口来设置
+应用程序选项。上面所创建的propertyGrid对象既是PropertyGrid的实体对象。现在我们创建一个名为
+AppSetting的类，其中包含映射到应用程序设置的所有属性。如果创建单独的类而不使用多个分散的变量，
+设置将更便于管理和维护。
+public class AppSetting{
+     private bool saveOnClose = true;
+     private string greetingText = "欢迎使用应用程序！";
+     private int itemsInMRU = 4;
+     private int maxRepeatRate = 10;
+     private bool settingsChanged = false;
+     private string appVersion = "1.0";
+    
+     public bool SaveOnClose
+     {
+         get { return saveOnClose; }
+         set { saveOnClose = value;}
+     }
+     public string GreetingText
+     {
+         get { return greetingText; }
+         set { greetingText = value; }
+     }
+     public int MaxRepeatRate
+     {
+         get { return maxRepeatRate; }
+         set { maxRepeatRate = value; }
+     }
+     public int ItemsInMRUList
+     {
+         get { return itemsInMRU; }
+         set { itemsInMRU = value; }
+     }
+     public bool SettingsChanged
+     {
+         get { return settingsChanged; }
+         set { settingsChanged = value; }
+     }
+     public string AppVersion
+     {
+         get { return appVersion; }
+         set { appVersion = value; }
+     }
+}
+选项窗口上的PropertyGrid将使用此类，因此请将类定义添加到应用程序项目中，在添加时可创建新
+文件或将其添加到现有窗体源代码的下方。
+
+选择对象
+要标识PropertyGrid显示的内容，请将PropertyGrid.SelectedObject属性设置为一个对象实例。然后，
+PropertyGrid将完成其余的工作。每次设置SelectedObject时，PropertyGrid都会刷新显示的属性。这
+提供了一种简单的方法来强制刷新属性，或在运行时切换对象。您还可以调用PropertyGrid.Refresh
+方法来刷新属性。下面代码创建了一个AppSettings对象，并将其设置为PropertyGrid.SelectedObject
+属性的值。
+AppSetting appSetting = new AppSetting();
+this.propertyGrid1.SelectedObject = appSetting;
