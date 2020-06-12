@@ -26,4 +26,71 @@ DefaultValueAttribute - 表示属性的默认值。如果希望为属性提供�
 与默认值相同，则可使用此特性。可以将此特性应用于所有属性。
 DefaultPropertyAttribute - 表示类的默认属性。在网格中选择某个类时，将首先突出显示该类的
 默认属性。可以将此特性应用于AppSettings类。
-现在，，我们将其中的一些特性应用于AppSetting类，以更改属性在PropertyGrid中的显示方式。
+现在，我们将其中的一些特性应用于AppSetting类，以更改属性在PropertyGrid中的显示方式。
+ [DefaultPropertyAttribute("SaveOnClose")]
+    public class AppSetting
+    {
+        private bool saveOnClose = true;
+        private string greetingText = "欢迎使用应用程序";
+        private int itemsInMRU = 4;
+        private int maxRepeatRate = 10;
+        private bool settingsChanged = false;
+        private string appVersion = "1.0";
+
+        [CategoryAttribute("文档设置"),
+        DefaultValueAttribute(true)]
+        public bool SaveOnClose
+        {   get {return saveOnClose; }
+            set {saveOnClose = value; }
+        }
+
+        [CategoryAttribute("全局设置"),
+        ReadOnlyAttribute(true),
+        DefaultValueAttribute("欢迎使用应用程序!")]
+        public string GreetingText
+        {
+            get { return greetingText; }
+            set { greetingText = value; }
+        }
+
+        [DescriptionAttribute("以毫秒表示的文本重复率。"),
+        CategoryAttribute("全局变量"),
+        DefaultValueAttribute(10)]
+        public int MaxRepeatRate
+        {
+            get { return maxRepeatRate; }
+            set { maxRepeatRate = value; }
+        }
+
+        [CategoryAttribute("全局变量"),
+        DefaultValueAttribute(4)]
+        public int ItemsInMRUList
+        {
+            get { return itemsInMRU; }
+            set { itemsInMRU = value; }
+        }
+
+        [BrowsableAttribute(false),
+        DefaultValueAttribute(false)]
+        public bool SettingsChanged
+        {
+            get { return settingsChanged; }
+            set { settingsChanged = value; }
+        }
+
+        [CategoryAttribute("版本"),
+        DefaultValueAttribute("1.0"),
+        ReadOnlyAttribute(true)]
+        public string AppVersion
+        {
+            get { return appVersion; }
+            set { appVersion = value; }
+        }
+    }
+使用此版本的选项窗口后，您会注意到以下几点：
+显示窗口时，将首先突出显示SaveOnClose属性。(这里有问题我的代码没有突出显示这个属性，目前不知道原因是什么)
+选中MaxRepeatRate属性时，说明帮助窗格中将显示"以毫秒表示的文本重复率”。 
+SaveOnClose 属性显示在“文档设置”类别下。其他属性分别显示在“全局设置”和“版本”类别下。 
+SettingsChanged 属性将不再显示。
+AppVersion 属性为只读。只读属性以灰显文本显示。 
+如果SaveOnClose属性包含的值不值true,该值将以粗体显示。PropertyGrid使用粗体文本表示包含非默认值的属性。
