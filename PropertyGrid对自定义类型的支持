@@ -1,0 +1,122 @@
+现在，您需要在AppSettings类中添加另外两个属性，即DefaultFileName和SpellCheckOptions。
+DefaultFileName属性用于获取或设置字符串；SpellCheckOptions属性用于获取或设置SpellingOptions
+类的实例。
+SpellingOptions类时一个新类，用于管理应用程序的拼写检查属性。对于何时创建单独的
+类以管理对象的属性，并没有严格的规定，而取决于您的整个类的设计。将SpellingOptions
+类定义添加到应用程序项目中-可以添加到新文件中，也可以添加到窗体源代码的下方。
+[DescriptionAttribute("展开以查看应用程序的拼写选项。")]
+public class SpellingOptions{
+     private bool spellCheckWhileTyping = true;
+     private bool spellCheckCAPS = false;
+     private bool suggestCorrections = true;
+     [DefaultValueAttribute(true)]
+     public bool SpellCheckWhileTyping 
+     {
+         get { return spellCheckWhileTyping; }
+         set { spellCheckWhileTyping = value; }
+     }
+     [DefaultValueAttribute(false)]
+     public bool SpellCheckCAPS 
+     {
+         get { return spellCheckCAPS; }
+         set { spellCheckCAPS = value; }
+     }
+     [DefaultValueAttribute(true)]
+     public bool SuggestCorrections 
+     {
+         get { return suggestCorrections; }
+         set { suggestCorrections = value; }
+     }
+}
+请注意SpellcheckOptions属性的外观。与.NET框架类型不同，它不展开或显示自定义的字符
+串表示。如果要在自己的复杂类型中提供与.NET框架类型相同的编辑体验，该如何处理呢？
+.NET框架类型使用TypeConverter和UITypeEditor类提供大部分PropertyGrid编辑支持，您
+也可以使用这些类。
+
+***添加可展开属性支持（关键技术）
+要是PropertyGrid能够展开SpellingOptions属性，您需要创建TypeConverter。
+TypeConverter提供了从一种类型转换为另一种类型的方法。PropertyGrid使用TypeConverter
+将对象类型转换为String，并使用该String在网格中显示对象值。在编辑过程中，TypeConverter
+会将String转换会对象类型。.NET框架提供的ExpandableObjectConverter类可以简化这一过程。
+***提供可展开对象支持
+1.创建一个从ExpandableObjectConverter继承而来的类。
+public class SpellingOptionsConverter:ExpandableObjectConverter
+{
+
+}
+2.如果destinationType参数与使用此类型转换器的类(示例中的SpellingOptions类)的类型
+相同，则覆盖CanConvertTo方法并返回true;否则返回基类CanConvertTo方法的值。
+public override bool CanConvertTo(ITypeDescriptorContext context,System.Type destinationType)
+{
+    if(destinationType == typeof(SpellingOptions))
+        return true;
+    return base.CanConcertTo(context,destinationType);
+}
+
+3.覆盖ConvertTo方法，并确保destinationType参数是一个String,并且值得类型
+与使用此类型转换器的类(示例中的SpellingOptions类)相同。如果其中任一情况为
+false，都将返回基类ConvertTo方法的值；否则，返回值对象的字符串表示。字符串
+表示需要使用唯一分隔符将类的每个属性隔开。由于整个字符串都将显示在PropertyGrid中，
+因此需要选择一个不会影响可读性的分隔符，逗号的效果通常比较好。
+public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture,
+    object value, System.Type destinationType) 
+{
+     if (destinationType == typeof(System.String) && 
+          value is SpellingOptions){
+         SpellingOptions so = (SpellingOptions)value;
+         return "在键入时检查:" + so.SpellCheckWhileTyping + 
+                "，检查大小写: " + so.SpellCheckCAPS +
+                "，建议更正: " + so.SuggestCorrections;
+     }
+     return base.ConvertTo(context, culture, value, destinationType);
+}
+4.通过指定类型转换器可以从字符串进行转换，您可以启用网格中对象字符串表示的编辑。
+要执行此操作，首先需要覆盖CanConvertFrom方法并返回true(如果源Type参数为String类型)
+；否则，返回基类CanConvertFrom方法的值。
+public override bool CanConvertFrom(ITypeDescriptionContext context,System.Type sourceType)
+{
+    if(sourceType == typeof(string))
+        return true;
+    return base.CanConvertFrom(context,sourceType);
+}
+5.要启用对象基类的编辑，同样需要覆盖ConvertFrom方法并确保值参数是一个String。如果
+不是String，将返回基类ConvertFrom方法的值；否则，返回基于值参数的类(示例中的SpellingOptions类)
+的新实例。您需要根据参数解析类的每个属性的值。了解在ConvertTo方法中创建的分隔字符串的格式将有
+助于您的解析。
+public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) 
+{
+     if (value is string) {
+         try {
+             string s = (string) value;
+             int colon = s.IndexOf(':');
+             int comma = s.IndexOf(',');
+             if (colon != -1 && comma != -1) {
+                 string checkWhileTyping = s.Substring(colon + 1 , (comma - colon - 1));
+                 colon = s.IndexOf(':', comma + 1);
+                 comma = s.IndexOf(',', comma + 1);
+                 string checkCaps = s.Substring(colon + 1 , (comma - colon -1));
+                 colon = s.IndexOf(':', comma + 1);
+                 string suggCorr = s.Substring(colon + 1);
+                 SpellingOptions so = new SpellingOptions();
+                 so.SpellCheckWhileTyping =Boolean.Parse(checkWhileTyping);
+                 so.SpellCheckCAPS = Boolean.Parse(checkCaps);
+                 so.SuggestCorrections = Boolean.Parse(suggCorr);
+                 return so;
+             }
+         }
+         catch {
+             throw new ArgumentException(
+                 "无法将“" + (string)value + 
+                                    "”转换为 SpellingOptions 类型");
+         }
+     }   
+     return base.ConvertFrom(context, culture, value);
+}
+6.现在已经有了一个类型转换器，下面您需要确定使用该类的目标类。您可以通过将TypeConverterAttribute
+应用到目标类(示例中的SpellingOptions类)来执行此操作。
+// 应用于 SpellingOptions 类的 TypeConverter 特性。
+[TypeConverterAttribute(typeof(SpellingOptionsConverter)),
+DescriptionAttribute(“展开以查看应用程序的拼写选项。")]
+public class SpellingOptions{ ... }
+注意：如果只需要可展开对象支持，而不需要自定义字符串表示，则只需将TypeConverterAttribute
+类中。将ExpandableObjectConverter指定为类型转换器类型。
