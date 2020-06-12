@@ -1,0 +1,18 @@
+对于基于Enum类型返回枚举的属性，PropertyGrid会自动在下拉列表中显示枚举值。
+EnumConverter也提供了这一功能。对于自己的属性，您可能希望为用户提供一个有效值
+列表(有时也称为选取列表或域列表)，而其类型并不是基于Enum。如果域值在运行时之前
+未知，或者值可以更改，则属于这种情况。
+修改选项窗口，提供一个用户可从中选择的默认文件名的域列表。您已经将DefaultFileName
+属性添加到AppSettings类。下一步是在PropertyGrid中显示属性的下拉列表，以提供域列表。
+
+提供简单的下拉列表属性支持
+1.创建一个从类型转换器类继承而来的类。由于DefaultFileName属性属于String类型，
+因此可以从StringConverter继承；这里并不需要。
+public class FileNameConverter:StringConverter{ }
+2.覆盖GetStandardValuesSupported方法并返回true，表示此对象 支持可以从列表中选
+去的一组标准值。
+public override bool GetStandardValueSupported(ITypeDescriptorContext context)
+{
+  return true;
+}
+3.覆盖GetStandardValues方法并返回填充了标准值的Standard
