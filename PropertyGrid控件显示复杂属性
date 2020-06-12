@@ -1,0 +1,88 @@
+到现在为止，选项窗口显示的都是简单的类型，如整数、布尔值和字符串。那么，如何显示更复杂的类型
+呢？如果应用程序需要跟踪窗口大小、文档字体或工具栏颜色等信息，该如何处理呢？.NET框架提供的某些
+数据类型具有特殊的显示功能，能使这些类型在PropertyGrid中更具可用性。
+
+对所提供类型的支持
+首先，请更新AppSettings类，为窗口大小(Size类型)、窗口字体(Font类型)和工具栏颜色(Color类型)
+添加新属性。
+[DefaultPropertyAttribute("SaveOnClose")]
+public class AppSettings{
+     private bool saveOnClose = true;
+     private string greetingText = "欢迎使用应用程序！";
+     private int maxRepeatRate = 10;
+     private int itemsInMRU = 4;
+     private bool settingsChanged = false;
+     private string appVersion = "1.0";
+     
+     private Size windowSize = new Size(100,100);
+     private Font windowFont = new Font("宋体",9,FontStyle.Regular);
+     private Color toolBarColor = SystemColors.Control;
+     
+     [CategoryAttribute("文档设置"),
+     DefaultValueAttribute(true)]
+     public bool SaveOnClose
+     {
+         get { return saveOnClose; }
+         set { saveOnClose = value;}
+     }
+     
+     [CategoryAttribute("文档设置")]
+     public Size WindowSize
+     {
+        get{return windowSize;}
+        set{windowSize = value;}
+     }
+     
+     [CategoryAttribute("文档设置")]
+     public Font WindowFont
+     {
+        get{return windowFont;}
+        set{windowFont = value;}
+     }
+     
+     [CategoryAttribute("全局设置")]
+     public Color ToolbarColor
+     {
+        get{return toolbarColor;}
+        set{toolbarColor = value;}
+     }
+     
+     [CategoryAttribute("全局设置"),
+     ReadOnlyAttribute(true),
+     DefaultValueAttribute("欢迎使用应用程序！")]
+     public string GreetingText
+     {
+         get { return greetingText; }
+         set { greetingText = value; }
+     }
+     [CategoryAttribute("全局设置"),
+     DefaultValueAttribute(4)]
+     public int ItemsInMRUList
+     {
+         get { return itemsInMRU; }
+         set { itemsInMRU = value; }
+     }
+     [DescriptionAttribute("以毫秒表示的文本重复率。"),
+     CategoryAttribute("全局设置"),
+     DefaultValueAttribute(10)]
+     public int MaxRepeatRate
+     {
+         get { return maxRepeatRate; }
+         set { maxRepeatRate = value; }
+     }
+     [BrowsableAttribute(false),
+     DefaultValueAttribute(false)]
+     public bool SettingsChanged
+     {
+         get { return settingsChanged; }
+         set { settingsChanged = value; }
+     }
+     [CategoryAttribute("版本"),
+     DefaultValueAttribute("1.0"),
+     ReadOnlyAttribute(true)]
+     public string AppVersion
+     {
+         get { return appVersion; }
+         set { appVersion = value; }
+     }
+}
